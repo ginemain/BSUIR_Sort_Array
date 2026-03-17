@@ -20,6 +20,9 @@ TForm1 *Form1;
 __fastcall TForm1::TForm1(TComponent* Owner)
     : TForm(Owner)
 {
+    // для рандома цифр
+	srand(time(NULL));
+
 	MemoResults->Clear();
 	MemoResults->Lines->Add("Здесь будет информация о сортировке");
 }
@@ -169,43 +172,75 @@ void TForm1::saveToOutputFolder(String sortName)
 	// Сохраняем отсортированный массив
     ofstream fileSorted(AnsiString(sortedFileName).c_str());
 
-    for (int i = 0; i < sortedArray.size(); i++)
-    {
-        fileSorted << sortedArray[i] << " ";
-    }
+	for (int i = 0; i < sortedArray.size(); i++)
+	{
+		fileSorted << sortedArray[i] << " ";
+	}
 
-    fileSorted.close();
+	fileSorted.close();
 
 	// Сохраняем результаты из Memo
-    ofstream fileResult(AnsiString(resultFileName).c_str());
-    fileResult << AnsiString(MemoResults->Lines->Text).c_str();
-    fileResult.close();
+	ofstream fileResult(AnsiString(resultFileName).c_str());
+	fileResult << AnsiString(MemoResults->Lines->Text).c_str();
+	fileResult.close();
 
 	ShowMessage("Файлы сохранены в папку output");
 }
 
-// Загрузка массива
+// Загрузка массива из текстового файла
 void __fastcall TForm1::btnLoadClick(TObject *Sender)
 {
-	if(OpenDialog1->Execute())
-	{
-		ifstream file(OpenDialog1->FileName.c_str());
-		originalArray.clear();
+    if(OpenDialog1->Execute())
+    {
+        ifstream file(AnsiString(OpenDialog1->FileName).c_str());
 
-		int value;
-		while(file >> value)
-			originalArray.push_back(value);
+        if(!file)
+        {
+            ShowMessage("Не удалось открыть файл!");
+            return;
+        }
 
-		file.close();
+        originalArray.clear();
 
-		// Сохраняем имя файла без расширения
-		currentFileName =
-			ChangeFileExt(
-				ExtractFileName(OpenDialog1->FileName),
-				""
-			);
+        int value;
 
+        // считываем числа из файла
+        while(file >> value)
+        {
+            originalArray.push_back(value);
+        }
+
+        file.close();
+
+        if(originalArray.empty())
+        {
+			ShowMessage("Файл пуст или содержит неверные данные!");
+            return;
+        }
+
+        // сохраняем имя файла
+        currentFileName = ChangeFileExt(
+            ExtractFileName(OpenDialog1->FileName), ""
+        );
+
+		// информация пользователю
+        MemoResults->Lines->Add(
+			"Загружен файл: " + currentFileName + ".txt"
+        );
+
+        MemoResults->Lines->Add(
+			"Размер массива: " + IntToStr((int)originalArray.size())
+            + " элементов."
+		);
+
+		// очищаем форму
+		// this->Canvas->FillRect(ClientRect);
+
+		// рисуем массив
 		Visualizer::drawArray(this, originalArray, -1, originalArray.size());
+
+		ShowMessage("Массив загружен успешно!");
+
     }
 }
 

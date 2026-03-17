@@ -15,13 +15,13 @@ object Form1: TForm1
     Left = 560
     Top = 144
     Width = 881
-    Height = 569
+    Height = 257
   end
   object Label1: TLabel
     Left = 24
     Top = 25
-    Width = 505
-    Height = 391
+    Width = 348
+    Height = 210
     Caption = 
       '                        '#1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1084#1072#1089#1089#1080#1074#1072#13#10#13#10#1056#1072#1079#1084#1077#1088' '#1084#1072#1089#1089#1080#1074#1072':'#13#10#13#10 +
       #1052#1080#1085'. '#1079#1085#1072#1095#1077#1085#1080#1077':'#13#10#13#10#1052#1072#1082#1089'. '#1079#1085#1072#1095#1077#1085#1080#1077':'
@@ -35,8 +35,8 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 560
     Top = 26
-    Width = 234
-    Height = 40
+    Width = 188
+    Height = 28
     Caption = #1057#1082#1086#1088#1086#1089#1090#1100' '#1072#1085#1080#1084#1072#1094#1080#1080':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -48,8 +48,8 @@ object Form1: TForm1
   object Label3: TLabel
     Left = 24
     Top = 422
-    Width = 505
-    Height = 31
+    Width = 105
+    Height = 28
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090#1099':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -61,8 +61,8 @@ object Form1: TForm1
   object Label4: TLabel
     Left = 560
     Top = 72
-    Width = 881
-    Height = 49
+    Width = 545
+    Height = 28
     Caption = #1042#1080#1079#1091#1072#1083#1080#1079#1072#1094#1080#1103' ( '#1088#1072#1073#1086#1090#1072#1077#1090' '#1090#1086#1083#1100#1082#1086' '#1087#1088#1080' '#1074#1082#1083#1102#1095#1077#1085#1085#1086#1081' '#1075#1072#1083#1086#1095#1082#1077' )'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
