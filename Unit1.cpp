@@ -190,77 +190,82 @@ void TForm1::saveToOutputFolder(String sortName)
 // Загрузка массива из текстового файла
 void __fastcall TForm1::btnLoadClick(TObject *Sender)
 {
-    if(OpenDialog1->Execute())
+  if(OpenDialog1->Execute())
+  {
+    ifstream file(AnsiString(OpenDialog1->FileName).c_str());
+
+	if(!file)
     {
-        ifstream file(AnsiString(OpenDialog1->FileName).c_str());
-
-        if(!file)
-        {
-            ShowMessage("Не удалось открыть файл!");
-            return;
-        }
-
-        originalArray.clear();
-
-        int value;
-
-        // считываем числа из файла
-        while(file >> value)
-        {
-            originalArray.push_back(value);
-        }
-
-        file.close();
-
-        if(originalArray.empty())
-        {
-			ShowMessage("Файл пуст или содержит неверные данные!");
-            return;
-        }
-
-        // сохраняем имя файла
-        currentFileName = ChangeFileExt(
-            ExtractFileName(OpenDialog1->FileName), ""
-        );
-
-		// информация пользователю
-        MemoResults->Lines->Add(
-			"Загружен файл: " + currentFileName + ".txt"
-        );
-
-        MemoResults->Lines->Add(
-			"Размер массива: " + IntToStr((int)originalArray.size())
-            + " элементов."
-		);
-
-		// очищаем форму
-		// this->Canvas->FillRect(ClientRect);
-
-		// рисуем массив
-		Visualizer::drawArray(this, originalArray, -1, originalArray.size());
-
-		ShowMessage("Массив загружен успешно!");
-
+      ShowMessage("Не удалось открыть файл!");
+      return;
     }
+
+    originalArray.clear();
+
+    int value;
+
+    // читаем числа
+    while(file >> value)
+    {
+      originalArray.push_back(value);
+    }
+
+    // проверка на неверные символы
+    if(file.fail() && !file.eof())
+    {
+      ShowMessage("Ошибка! Файл содержит недопустимые символы.");
+      file.close();
+      originalArray.clear();
+      return;
+    }
+
+    file.close();
+
+    if(originalArray.empty())
+    {
+      ShowMessage("Файл пуст!");
+      return;
+    }
+
+    // сохраняем имя файла
+    currentFileName = ChangeFileExt(
+      ExtractFileName(OpenDialog1->FileName), ""
+    );
+
+    // информация пользователю
+    MemoResults->Lines->Add(
+      "Загружен файл: " + currentFileName + ".txt"
+    );
+
+    MemoResults->Lines->Add(
+      "Размер массива: " + IntToStr((int)originalArray.size())
+      + " элементов."
+    );
+
+    // рисуем массив
+    Visualizer::drawArray(this, originalArray, -1, originalArray.size());
+
+    ShowMessage("Массив загружен успешно!");
+  }
 }
 
 // save sorted
 void __fastcall TForm1::btnSaveSortedClick(TObject *Sender)
 {
-    if (sortedArray.empty())
-    {
-        ShowMessage("Нет отсортированного массива!");
-        return;
-    }
+	if (sortedArray.empty())
+	{
+		ShowMessage("Нет отсортированного массива!");
+		return;
+	}
 
-    String sortName = cbAlgorithms->Text;
-    saveToOutputFolder(sortName);
+	String sortName = cbAlgorithms->Text;
+	saveToOutputFolder(sortName);
 }
 // save results
 void __fastcall TForm1::btnSaveResultsClick(TObject *Sender)
 {
-    if (MemoResults->Lines->Count == 0)
-    {
+	if (MemoResults->Lines->Count == 0)
+	{
         ShowMessage("Нет результатов для сохранения!");
         return;
     }
