@@ -64,6 +64,8 @@ void __fastcall TForm1::btnGenerateClick(TObject *Sender)
 // Сортировка выбранным алгоритмом
 void __fastcall TForm1::btnSortSelectedClick(TObject *Sender)
 {
+	SortStats stats;
+
     if(originalArray.empty()) return;
 
     sortedArray = originalArray;
@@ -73,32 +75,38 @@ void __fastcall TForm1::btnSortSelectedClick(TObject *Sender)
 
     auto start = chrono::high_resolution_clock::now();
 
-    switch(cbAlgorithms->ItemIndex)
+	switch(cbAlgorithms->ItemIndex)
     {
-        case 0: Sorting::bubbleSort(sortedArray, this, animate, delay); break;
-        case 1: Sorting::insertionSort(sortedArray, this, animate, delay); break;
-        case 2: Sorting::selectionSort(sortedArray, this, animate, delay); break;
-        case 3: Sorting::shellSort(sortedArray, this, animate, delay); break;
-        case 4: Sorting::quickSort(sortedArray, 0, sortedArray.size()-1); break;
-    }
+		case 0: Sorting::bubbleSort(sortedArray, stats, this, animate, delay); break;
+		case 1: Sorting::insertionSort(sortedArray, stats, this, animate, delay); break;
+		case 2: Sorting::selectionSort(sortedArray, stats, this, animate, delay); break;
+		case 3: Sorting::shellSort(sortedArray, stats, this, animate, delay); break;
+		case 4: Sorting::quickSort(sortedArray, stats, 0, sortedArray.size()-1); break;
+	}
 
     auto end = chrono::high_resolution_clock::now();
     double time = chrono::duration<double, milli>(end - start).count();
 
-	MemoResults->Lines->Add(
-        cbAlgorithms->Text + " : " + FloatToStr(time) + " ms"
-	);
+	// вывод в Memo
+	String resultLine =
+		cbAlgorithms->Text +
+		" | time: " + FloatToStr(time) + " ms" +
+		" | comp: " + IntToStr(stats.comparisons) +
+		" | swap: " + IntToStr(stats.swaps);
+
+	MemoResults->Lines->Add(resultLine);
+
 	// оставляем отсортированный массив весь зеленым
 	Visualizer::drawArray(this, sortedArray, -1, 0);
-    ShowMessage("Массив отсортирован!");
+	ShowMessage("Массив отсортирован!");
 
-	/* автосохранение в Output
-	saveToOutputFolder(cbAlgorithms->Text); */
+
 }
 
 // Сортировка всеми (без анимации)
 void __fastcall TForm1::btnSortAllClick(TObject *Sender)
 {
+
     if(originalArray.empty()) return;
 
 	MemoResults->Clear();
@@ -109,27 +117,33 @@ void __fastcall TForm1::btnSortAllClick(TObject *Sender)
 
         auto start = chrono::high_resolution_clock::now();
 
-        switch(i)
-        {
-            case 0: Sorting::bubbleSort(temp, this, false, 0); break;
-            case 1: Sorting::insertionSort(temp, this, false, 0); break;
-            case 2: Sorting::selectionSort(temp, this, false, 0); break;
-            case 3: Sorting::shellSort(temp, this, false, 0); break;
-            case 4: Sorting::quickSort(temp, 0, temp.size()-1); break;
-        }
+		SortStats stats;
+
+		switch(i)
+		{
+			case 0: Sorting::bubbleSort(temp, stats, this, false, 0); break;
+			case 1: Sorting::insertionSort(temp, stats, this, false, 0); break;
+			case 2: Sorting::selectionSort(temp, stats, this, false, 0); break;
+			case 3: Sorting::shellSort(temp, stats, this, false, 0); break;
+			case 4: Sorting::quickSort(temp, stats, 0, temp.size()-1); break;
+		}
 
         auto end = chrono::high_resolution_clock::now();
         double time = chrono::duration<double, milli>(end - start).count();
 
-        String sortName = cbAlgorithms->Items->Strings[i];
+		String sortName = cbAlgorithms->Items->Strings[i];
 
-        MemoResults->Lines->Add(
-            sortName + " : " + FloatToStr(time) + " ms"
-        );
+		// ВЫВОД
+		String resultLine =
+			sortName +
+			" | time: " + FloatToStr(time) + " ms" +
+			" | comp: " + IntToStr(stats.comparisons) +
+			" | swap: " + IntToStr(stats.swaps);
+
+		MemoResults->Lines->Add(resultLine);
 
 		sortedArray = temp;
-		/* автосохранение
-		saveToOutputFolder(sortName); */
+
 	}
 }
 
@@ -181,7 +195,18 @@ void TForm1::saveToOutputFolder(String sortName)
 
 	// Сохраняем результаты из Memo
 	ofstream fileResult(AnsiString(resultFileName).c_str());
-	fileResult << AnsiString(MemoResults->Lines->Text).c_str();
+
+	for(int i = 0; i < MemoResults->Lines->Count; i++)
+	{
+		String line = MemoResults->Lines->Strings[i];
+
+		// сохраняем только строки с результатами (где есть time)
+		if(line.Pos("time") > 0)
+		{
+			fileResult << AnsiString(line).c_str() << endl;
+		}
+	}
+
 	fileResult.close();
 
 	ShowMessage("Файлы сохранены в папку output");
@@ -194,6 +219,7 @@ void __fastcall TForm1::btnLoadClick(TObject *Sender)
   {
     ifstream file(AnsiString(OpenDialog1->FileName).c_str());
 
+	// проверка файла на открытие
 	if(!file)
     {
       ShowMessage("Не удалось открыть файл!");
@@ -214,13 +240,16 @@ void __fastcall TForm1::btnLoadClick(TObject *Sender)
     if(file.fail() && !file.eof())
     {
       ShowMessage("Ошибка! Файл содержит недопустимые символы.");
-      file.close();
-      originalArray.clear();
+	  file.close();
+
+	  originalArray.clear();
+
       return;
     }
 
     file.close();
 
+	// проверка на пустоту массива
     if(originalArray.empty())
     {
       ShowMessage("Файл пуст!");

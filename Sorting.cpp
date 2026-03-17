@@ -4,27 +4,25 @@
 using namespace std;
 
 // ѕузырькова€ сортировка
-void Sorting::bubbleSort(vector<int>& arr, TForm* form, bool animate, int delay)
+void Sorting::bubbleSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
 {
     int n = arr.size();
 
-    // внешний цикл - количество проходов
     for(int i = 0; i < n - 1; i++)
     {
-        // внутренний цикл - сравнение соседних элементов
         for(int j = 0; j < n - i - 1; j++)
         {
-            // если левый элемент больше правого Ч мен€ем местами
-            if(arr[j] > arr[j + 1])
-                swap(arr[j], arr[j + 1]);
+            stats.comparisons++;
 
-            // визуализаци€ шага алгоритма
+            if(arr[j] > arr[j + 1])
+            {
+                swap(arr[j], arr[j + 1]);
+                stats.swaps++;
+            }
+
             if(animate)
             {
-                // j Ч текущий элемент
-                // n - i Ч начало уже отсортированной части справа
                 Visualizer::drawArray(form, arr, j, n - i);
-
                 Sleep(delay);
                 Application->ProcessMessages();
             }
@@ -33,21 +31,26 @@ void Sorting::bubbleSort(vector<int>& arr, TForm* form, bool animate, int delay)
 }
 
 // —ортировка вставками
-void Sorting::insertionSort(vector<int>& arr, TForm* form, bool animate, int delay)
+void Sorting::insertionSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
 {
     int n = arr.size();
 
-    // начинаем со второго элемента
     for(int i = 1; i < n; i++)
     {
         int key = arr[i];
         int j = i - 1;
 
-        // сдвигаем элементы вправо
-        while(j >= 0 && arr[j] > key)
+        while(j >= 0)
         {
-            arr[j + 1] = arr[j];
-            j--;
+            stats.comparisons++;
+
+            if(arr[j] > key)
+            {
+                arr[j + 1] = arr[j];
+                stats.swaps++;
+                j--;
+            }
+            else break;
 
             if(animate)
             {
@@ -57,37 +60,36 @@ void Sorting::insertionSort(vector<int>& arr, TForm* form, bool animate, int del
             }
         }
 
-        // вставл€ем элемент на нужное место
         arr[j + 1] = key;
     }
 }
 
 // —ортировка выбором
-void Sorting::selectionSort(vector<int>& arr, TForm* form, bool animate, int delay)
+void Sorting::selectionSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
 {
     int n = arr.size();
 
-    // перебираем позиции массива
     for(int i = 0; i < n - 1; i++)
     {
         int minIndex = i;
 
-        // ищем минимальный элемент
         for(int j = i + 1; j < n; j++)
         {
+            stats.comparisons++;
+
             if(arr[j] < arr[minIndex])
                 minIndex = j;
         }
 
-        // мен€ем найденный минимум с текущим элементом
-        swap(arr[i], arr[minIndex]);
+        if(minIndex != i)
+        {
+            swap(arr[i], arr[minIndex]);
+            stats.swaps++;
+        }
 
         if(animate)
         {
-            // i Ч текуща€ позици€
-            // i + 1 Ч отсортированна€ часть слева
             Visualizer::drawArray(form, arr, i, n);
-
             Sleep(delay);
             Application->ProcessMessages();
         }
@@ -95,11 +97,10 @@ void Sorting::selectionSort(vector<int>& arr, TForm* form, bool animate, int del
 }
 
 // Shell Sort
-void Sorting::shellSort(vector<int>& arr, TForm* form, bool animate, int delay)
+void Sorting::shellSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
 {
     int n = arr.size();
 
-    // начинаем с большого шага и уменьшаем его
     for(int gap = n / 2; gap > 0; gap /= 2)
     {
         for(int i = gap; i < n; i++)
@@ -107,10 +108,16 @@ void Sorting::shellSort(vector<int>& arr, TForm* form, bool animate, int delay)
             int temp = arr[i];
             int j;
 
-            // сортировка элементов с заданным шагом
-            for(j = i; j >= gap && arr[j - gap] > temp; j -= gap)
+            for(j = i; j >= gap; j -= gap)
             {
-                arr[j] = arr[j - gap];
+                stats.comparisons++;
+
+                if(arr[j - gap] > temp)
+                {
+                    arr[j] = arr[j - gap];
+                    stats.swaps++;
+                }
+                else break;
 
                 if(animate)
                 {
@@ -125,34 +132,38 @@ void Sorting::shellSort(vector<int>& arr, TForm* form, bool animate, int delay)
     }
 }
 
-// ¬спомогательна€ функци€ Quick Sort
-int Sorting::partition(vector<int>& arr, int low, int high)
+// partition дл€ quick sort
+int Sorting::partition(vector<int>& arr, SortStats& stats, int low, int high)
 {
-    int pivot = arr[high]; // опорный элемент
+    int pivot = arr[high];
     int i = low - 1;
 
     for(int j = low; j < high; j++)
     {
+        stats.comparisons++;
+
         if(arr[j] < pivot)
         {
             i++;
             swap(arr[i], arr[j]);
+            stats.swaps++;
         }
     }
 
     swap(arr[i + 1], arr[high]);
+    stats.swaps++;
+
     return i + 1;
 }
 
-// Ѕыстра€ сортировка (Quick Sort)
-void Sorting::quickSort(vector<int>& arr, int low, int high)
+// Quick Sort
+void Sorting::quickSort(vector<int>& arr, SortStats& stats, int low, int high)
 {
     if(low < high)
     {
-        int pi = partition(arr, low, high);
+        int pi = partition(arr, stats, low, high);
 
-        // рекурсивна€ сортировка частей массива
-        quickSort(arr, low, pi - 1);
-		quickSort(arr, pi + 1, high);
+        quickSort(arr, stats, low, pi - 1);
+        quickSort(arr, stats, pi + 1, high);
     }
 }
