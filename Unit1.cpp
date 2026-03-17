@@ -143,8 +143,11 @@ void __fastcall TForm1::btnSortAllClick(TObject *Sender)
 		MemoResults->Lines->Add(resultLine);
 
 		sortedArray = temp;
-
 	}
+
+	// рисуем отсортированный массив весь зеленым
+	Visualizer::drawArray(this, sortedArray, -1, 0);
+	ShowMessage("Массив отсортирован всеми видами сортировок!");
 }
 
 

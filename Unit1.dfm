@@ -143,7 +143,7 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 6
-    Text = #1042#1099#1073#1088#1072#1090#1100' '#1089#1086#1088#1090#1080#1088#1086#1074#1082#1091
+    Text = 'Sort All'
     Items.Strings = (
       'Bubble Sort'
       'Insertion Sort'
