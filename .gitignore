@@ -1,0 +1,20 @@
+# Build
+Win32/
+*.exe
+*.obj
+*.o
+*.dll
+*.map
+*.tds
+*.res
+
+# RAD C++ Builder
+*.local
+*.identcache
+*.tlog
+
+# History
+__history/
+
+# Output files
+*.txt
