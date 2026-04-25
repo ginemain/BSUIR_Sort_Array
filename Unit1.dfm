@@ -77,7 +77,13 @@ object Form1: TForm1
     Width = 497
     Height = 67
     Cursor = crHandPoint
-    Caption = #1057#1043#1045#1053#1045#1056#1048#1056#1054#1042#1040#1058#1068
+    Caption = #55356#57266
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -22
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
     OnClick = btnGenerateClick
   end
@@ -87,7 +93,13 @@ object Form1: TForm1
     Width = 442
     Height = 74
     Cursor = crHandPoint
-    Caption = #1057#1054#1056#1058#1048#1056#1054#1042#1040#1058#1068' '#13#10#1042#1067#1041#1056#1040#1053#1053#1067#1052' '#1056#1045#1046#1048#1052#1054#1052
+    Caption = #1057#1054#1056#1058#1048#1056#1054#1042#1040#1058#1068' '#1042#1067#1041#1056#1040#1053#1053#1067#1052' '#1040#1051#1043#1054#1056#1048#1058#1052#1054#1052' '#55357#56566
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 1
     OnClick = btnSortSelectedClick
   end
@@ -97,7 +109,13 @@ object Form1: TForm1
     Width = 433
     Height = 74
     Cursor = crHandPoint
-    Caption = #1057#1054#1056#1058#1048#1056#1054#1042#1050#1040' '#13#10#1042#1057#1045#1052#1048' '#1056#1045#1046#1048#1052#1040#1052#1048
+    Caption = #1057#1054#1056#1058#1048#1056#1054#1042#1040#1058#1068' '#1042#1057#1045#1052#1048' '#1040#1051#1043#1054#1056#1048#1058#1052#1040#1052#1048
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 2
     OnClick = btnSortAllClick
   end
@@ -107,7 +125,13 @@ object Form1: TForm1
     Width = 257
     Height = 74
     Cursor = crHandPoint
-    Caption = #1057#1054#1061#1056#1040#1053#1048#1058#1068#13#10#1054#1058#1057#1054#1056#1058#1048#1056#1054#1042#1040#1053#1053#1067#1049' '#1052#1040#1057#1057#1048#1042
+    Caption = #1069#1050#1057#1055#1054#1056#1058' '#13#10#1043#1054#1058#1054#1042#1054#1043#1054' '#13#10#1052#1040#1057#1057#1048#1042#1040' '#10140']'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 3
     OnClick = btnSaveSortedClick
   end
@@ -117,7 +141,13 @@ object Form1: TForm1
     Width = 234
     Height = 74
     Cursor = crHandPoint
-    Caption = #1057#1054#1061#1056#1040#1053#1048#1058#1068' '#1056#1045#1047#1059#1051#1068#1058#1040#1058#1067
+    Caption = #1057#1054#1061#1056#1040#1053#1048#1058#1068' '#1056#1045#1047#1059#1051#1068#1058#1040#1058#1067' '#55357#56510
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 4
     OnClick = btnSaveResultsClick
   end
@@ -127,7 +157,13 @@ object Form1: TForm1
     Width = 497
     Height = 66
     Cursor = crHandPoint
-    Caption = #1047#1040#1043#1056#1059#1047#1048#1058#1068' '#1052#1040#1057#1057#1048#1042
+    Caption = #55357#56514
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -20
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 5
     OnClick = btnLoadClick
   end
@@ -157,6 +193,12 @@ object Form1: TForm1
     Width = 265
     Height = 49
     AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 7
     TextHint = #1056#1072#1079#1084#1077#1088' '#1084#1072#1089#1089#1080#1074#1072
   end
@@ -167,6 +209,12 @@ object Form1: TForm1
     Height = 49
     Cursor = crArrow
     AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 8
     TextHint = #1052#1080#1085#1080#1084#1072#1083#1100#1085#1086#1077' '#1079#1085#1072#1095#1077#1085#1080#1077
   end
@@ -176,13 +224,19 @@ object Form1: TForm1
     Width = 265
     Height = 49
     AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 9
     TextHint = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1079#1085#1072#1095#1077#1085#1080#1077
   end
   object MemoResults: TMemo
     Left = 24
     Top = 453
-    Width = 497
+    Width = 1417
     Height = 268
     Cursor = crNo
     Font.Charset = DEFAULT_CHARSET
@@ -203,7 +257,7 @@ object Form1: TForm1
     Height = 36
     Max = 100
     Min = 1
-    Position = 30
+    Position = 50
     TabOrder = 11
   end
   object cbAnimation: TCheckBox

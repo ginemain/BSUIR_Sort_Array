@@ -1,19 +1,15 @@
 #include "Visualizer.h"
 #include "Unit1.h"
-#include <algorithm>
 
-using namespace std;
-
-// функция отрисовки массива
-// activeIndex - элемент, который сейчас изменяется
-// sortedStart - с какого индекса начинается уже отсортированная часть справа
-void Visualizer::drawArray(TForm* form, vector<int>& arr, int activeIndex, int sortedStart)
+void Visualizer::drawArray(TForm* form, int* arr, int size, int activeIndex, int sortedStart)
 {
     // получаем форму
     TForm1* f = dynamic_cast<TForm1*>(form);
+    if(f == nullptr) return;
 
     // получаем Canvas для рисования
     TCanvas* canvas = f->paintBox->Canvas;
+    if(canvas == nullptr) return;
 
     int width = f->paintBox->Width;
     int height = f->paintBox->Height;
@@ -23,34 +19,35 @@ void Visualizer::drawArray(TForm* form, vector<int>& arr, int activeIndex, int s
     canvas->FillRect(TRect(0, 0, width, height));
 
     // если массив пустой — ничего не рисуем
-    if(arr.empty()) return;
+    if(arr == nullptr || size == 0) return;
 
-    int n = arr.size();
-
-    // ширина одного столбца
+    int n = size;
     int barWidth = width / n;
+    if(barWidth < 1) barWidth = 1;
 
     // находим максимальный элемент (для масштабирования)
-    int maxVal = *max_element(arr.begin(), arr.end());
+    int maxVal = arr[0];
+    for(int i = 1; i < n; i++)
+    {
+        if(arr[i] > maxVal) maxVal = arr[i];
+    }
+    if(maxVal == 0) maxVal = 1;
 
     for(int i = 0; i < n; i++)
     {
         // вычисляем высоту столбца
         int barHeight = (double)arr[i] / maxVal * (height - 10);
+        if(barHeight < 1) barHeight = 1;
 
-		// ВЫБОР ЦВЕТА
-
-        // если элемент сейчас активный (сравнивается / меняется)
+        // выбор цвета
         if(i == activeIndex)
-        {
+		{
             canvas->Brush->Color = clRed;
         }
-        // если элемент уже находится в отсортированной части справа
         else if(i >= sortedStart)
         {
-			canvas->Brush->Color = (TColor)RGB(100, 220, 120); // зеленым делаем
+            canvas->Brush->Color = (TColor)RGB(100, 220, 120);
         }
-        // обычные элементы
         else
         {
             canvas->Brush->Color = clBlue;

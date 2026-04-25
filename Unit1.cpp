@@ -7,8 +7,8 @@
 
 #include <fstream>
 #include <chrono>
-#include <algorithm>
 #include <System.IOUtils.hpp>
+
 
 using namespace std;
 
@@ -21,10 +21,24 @@ __fastcall TForm1::TForm1(TComponent* Owner)
     : TForm(Owner)
 {
     // для рандома цифр
-	srand(time(NULL));
+    srand(time(NULL));
 
-	MemoResults->Clear();
-	MemoResults->Lines->Add("Здесь будет информация о сортировке");
+	// ИНИЦИАЛИЗИРУЕМ УКАЗАТЕЛИ
+    originalArray = nullptr;
+    sortedArray = nullptr;
+    arraySize = 0;
+
+    MemoResults->Clear();
+    MemoResults->Lines->Add("Здесь будет информация о сортировке");
+}
+
+// ДЕСТРУКТОР - ОСВОБОЖДАЕМ ПАМЯТЬ
+__fastcall TForm1::~TForm1()
+{
+    if(originalArray != nullptr)
+        delete[] originalArray;
+    if(sortedArray != nullptr)
+        delete[] sortedArray;
 }
 
 // Проверка корректности ввода
@@ -47,115 +61,137 @@ void __fastcall TForm1::btnGenerateClick(TObject *Sender)
         return;
     }
 
-    originalArray.clear();
+	// ОСВОБОЖДАЕМ СТАРУЮ ПАМЯТЬ
+    if(originalArray != nullptr)
+    {
+        delete[] originalArray;
+        originalArray = nullptr;
+    }
+    if(sortedArray != nullptr)
+    {
+        delete[] sortedArray;
+        sortedArray = nullptr;
+    }
 
     int size   = StrToInt(editSize->Text);
     int minVal = StrToInt(editMin->Text);
     int maxVal = StrToInt(editMax->Text);
 
-    for(int i = 0; i < size; i++)
-        originalArray.push_back(minVal + rand() % (maxVal - minVal + 1));
+	// ВЫДЕЛЯЕМ ПАМЯТЬ И ЗАПОЛНЯЕМ
+	arraySize = size;
+    originalArray = new int[arraySize];
+
+    for(int i = 0; i < arraySize; i++)
+        originalArray[i] = minVal + rand() % (maxVal - minVal + 1);
 
     currentFileName = "generated";
 
-	Visualizer::drawArray(this, originalArray, -1, originalArray.size());
+    Visualizer::drawArray(this, originalArray, arraySize, -1, arraySize);
 }
 
 // Сортировка выбранным алгоритмом
 void __fastcall TForm1::btnSortSelectedClick(TObject *Sender)
 {
-	SortStats stats;
+    SortStats stats;
 
-    if(originalArray.empty()) return;
+	if(originalArray == nullptr || arraySize == 0) return;
 
-    sortedArray = originalArray;
+	// КОПИРУЕМ ИСХОДНЫЙ МАССИВ В sortedArray
+    if(sortedArray != nullptr)
+        delete[] sortedArray;
 
-    bool animate = cbAnimation->Checked && sortedArray.size() <= 100;
+    sortedArray = new int[arraySize];
+    for(int i = 0; i < arraySize; i++)
+        sortedArray[i] = originalArray[i];
+
+	bool animate = cbAnimation->Checked && arraySize <= 100;
     int delay = 101 - trackSpeed->Position;
 
     auto start = chrono::high_resolution_clock::now();
 
-	switch(cbAlgorithms->ItemIndex)
+    switch(cbAlgorithms->ItemIndex)
     {
-		case 0: Sorting::bubbleSort(sortedArray, stats, this, animate, delay); break;
-		case 1: Sorting::insertionSort(sortedArray, stats, this, animate, delay); break;
-		case 2: Sorting::selectionSort(sortedArray, stats, this, animate, delay); break;
-		case 3: Sorting::shellSort(sortedArray, stats, this, animate, delay); break;
-		case 4: Sorting::quickSort(sortedArray, stats, 0, sortedArray.size()-1); break;
-	}
+        case 0: Sorting::bubbleSort(sortedArray, arraySize, stats, this, animate, delay); break;
+        case 1: Sorting::insertionSort(sortedArray, arraySize, stats, this, animate, delay); break;
+        case 2: Sorting::selectionSort(sortedArray, arraySize, stats, this, animate, delay); break;
+        case 3: Sorting::shellSort(sortedArray, arraySize, stats, this, animate, delay); break;
+        case 4: Sorting::quickSort(sortedArray, arraySize, stats, 0, arraySize - 1); break;
+    }
 
     auto end = chrono::high_resolution_clock::now();
     double time = chrono::duration<double, milli>(end - start).count();
 
-	// вывод в Memo
-	String resultLine =
-		cbAlgorithms->Text +
-		" | time: " + FloatToStr(time) + " ms" +
-		" | comp: " + IntToStr(stats.comparisons) +
-		" | swap: " + IntToStr(stats.swaps);
+    // вывод в Memo
+    String resultLine =
+        cbAlgorithms->Text +
+        " | time: " + FloatToStr(time) + " ms" +
+        " | comp: " + IntToStr(stats.comparisons) +
+        " | swap: " + IntToStr(stats.swaps);
 
-	MemoResults->Lines->Add(resultLine);
+    MemoResults->Lines->Add(resultLine);
 
-	// оставляем отсортированный массив весь зеленым
-	Visualizer::drawArray(this, sortedArray, -1, 0);
-	ShowMessage("Массив отсортирован!");
-
-
+    // оставляем отсортированный массив весь зеленым
+    Visualizer::drawArray(this, sortedArray, arraySize, -1, 0);
+    ShowMessage("Массив отсортирован!");
 }
 
 // Сортировка всеми (без анимации)
 void __fastcall TForm1::btnSortAllClick(TObject *Sender)
 {
+	if(originalArray == nullptr || arraySize == 0) return;
 
-    if(originalArray.empty()) return;
-
-	MemoResults->Clear();
+    MemoResults->Clear();
 
     for(int i = 0; i < 5; i++)
     {
-        vector<int> temp = originalArray;
+		// КОПИРУЕМ ИСХОДНЫЙ МАССИВ
+        int* temp = new int[arraySize];
+        for(int j = 0; j < arraySize; j++)
+            temp[j] = originalArray[j];
 
         auto start = chrono::high_resolution_clock::now();
 
-		SortStats stats;
+        SortStats stats;
 
-		switch(i)
-		{
-			case 0: Sorting::bubbleSort(temp, stats, this, false, 0); break;
-			case 1: Sorting::insertionSort(temp, stats, this, false, 0); break;
-			case 2: Sorting::selectionSort(temp, stats, this, false, 0); break;
-			case 3: Sorting::shellSort(temp, stats, this, false, 0); break;
-			case 4: Sorting::quickSort(temp, stats, 0, temp.size()-1); break;
-		}
+        switch(i)
+        {
+            case 0: Sorting::bubbleSort(temp, arraySize, stats, this, false, 0); break;
+            case 1: Sorting::insertionSort(temp, arraySize, stats, this, false, 0); break;
+            case 2: Sorting::selectionSort(temp, arraySize, stats, this, false, 0); break;
+            case 3: Sorting::shellSort(temp, arraySize, stats, this, false, 0); break;
+            case 4: Sorting::quickSort(temp, arraySize, stats, 0, arraySize - 1); break;
+        }
 
         auto end = chrono::high_resolution_clock::now();
         double time = chrono::duration<double, milli>(end - start).count();
 
-		String sortName = cbAlgorithms->Items->Strings[i];
+        String sortName = cbAlgorithms->Items->Strings[i];
 
-		// ВЫВОД
-		String resultLine =
-			sortName +
-			" | time: " + FloatToStr(time) + " ms" +
-			" | comp: " + IntToStr(stats.comparisons) +
-			" | swap: " + IntToStr(stats.swaps);
+        // ВЫВОД
+        String resultLine =
+            sortName +
+            " | time: " + FloatToStr(time) + " ms" +
+            " | comp: " + IntToStr(stats.comparisons) +
+            " | swap: " + IntToStr(stats.swaps);
 
-		MemoResults->Lines->Add(resultLine);
+        MemoResults->Lines->Add(resultLine);
 
-		sortedArray = temp;
-	}
+		// ОБНОВЛЯЕМ sortedArray
+        if(sortedArray != nullptr)
+            delete[] sortedArray;
+        sortedArray = temp;
+    }
 
-	// рисуем отсортированный массив весь зеленым
-	Visualizer::drawArray(this, sortedArray, -1, 0);
-	ShowMessage("Массив отсортирован всеми видами сортировок!");
+    // рисуем отсортированный массив весь зеленым
+    Visualizer::drawArray(this, sortedArray, arraySize, -1, 0);
+    ShowMessage("Массив отсортирован всеми видами сортировок!");
 }
-
 
 // сохранение в папку Output
 void TForm1::saveToOutputFolder(String sortName)
 {
     // Проверяем, есть ли отсортированный массив
-    if (sortedArray.empty())
+	if (sortedArray == nullptr || arraySize == 0)
     {
         ShowMessage("Сначала нужно выполнить сортировку!");
         return; // ничего не сохраняем
@@ -186,33 +222,33 @@ void TForm1::saveToOutputFolder(String sortName)
     String resultFileName =
         outputFolder + baseName + "_" + sortName + "_result.txt";
 
-	// Сохраняем отсортированный массив
+    // Сохраняем отсортированный массив
     ofstream fileSorted(AnsiString(sortedFileName).c_str());
 
-	for (int i = 0; i < sortedArray.size(); i++)
-	{
-		fileSorted << sortedArray[i] << " ";
-	}
+	for (int i = 0; i < arraySize; i++)
+    {
+        fileSorted << sortedArray[i] << " ";
+    }
 
-	fileSorted.close();
+    fileSorted.close();
 
-	// Сохраняем результаты из Memo
-	ofstream fileResult(AnsiString(resultFileName).c_str());
+    // Сохраняем результаты из Memo
+    ofstream fileResult(AnsiString(resultFileName).c_str());
 
-	for(int i = 0; i < MemoResults->Lines->Count; i++)
-	{
-		String line = MemoResults->Lines->Strings[i];
+    for(int i = 0; i < MemoResults->Lines->Count; i++)
+    {
+        String line = MemoResults->Lines->Strings[i];
 
-		// сохраняем только строки с результатами (где есть time)
-		if(line.Pos("time") > 0)
-		{
-			fileResult << AnsiString(line).c_str() << endl;
-		}
-	}
+        // сохраняем только строки с результатами (где есть time)
+        if(line.Pos("time") > 0)
+        {
+            fileResult << AnsiString(line).c_str() << endl;
+        }
+    }
 
-	fileResult.close();
+    fileResult.close();
 
-	ShowMessage("Файлы сохранены в папку output");
+    ShowMessage("Файлы сохранены в папку output");
 }
 
 // Загрузка массива из текстового файла
@@ -222,60 +258,84 @@ void __fastcall TForm1::btnLoadClick(TObject *Sender)
   {
     ifstream file(AnsiString(OpenDialog1->FileName).c_str());
 
-	// проверка файла на открытие
-	if(!file)
+    // проверка файла на открытие
+    if(!file)
     {
       ShowMessage("Не удалось открыть файл!");
       return;
     }
 
-    originalArray.clear();
+	// ОСВОБОЖДАЕМ СТАРУЮ ПАМЯТЬ
+    if(originalArray != nullptr)
+    {
+        delete[] originalArray;
+        originalArray = nullptr;
+    }
 
+	// СНАЧАЛА СЧИТАЕМ КОЛИЧЕСТВО ЧИСЕЛ В ФАЙЛЕ
+    int count = 0;
     int value;
-
-    // читаем числа
     while(file >> value)
     {
-      originalArray.push_back(value);
+        count++;
+    }
+
+    if(count == 0)
+    {
+        ShowMessage("Файл пуст!");
+        file.close();
+        return;
+    }
+
+	// ВОЗВРАЩАЕМСЯ В НАЧАЛО ФАЙЛА
+    file.clear();
+    file.seekg(0, ios::beg);
+
+	// ВЫДЕЛЯЕМ ПАМЯТЬ И ЧИТАЕМ ЧИСЛА
+    arraySize = count;
+    originalArray = new int[arraySize];
+
+    for(int i = 0; i < arraySize; i++)
+    {
+        file >> originalArray[i];
     }
 
     // проверка на неверные символы
     if(file.fail() && !file.eof())
     {
-      ShowMessage("Ошибка! Файл содержит недопустимые символы.");
-	  file.close();
-
-	  originalArray.clear();
-
-      return;
+        ShowMessage("Ошибка! Файл содержит недопустимые символы.");
+        file.close();
+        delete[] originalArray;
+        originalArray = nullptr;
+        arraySize = 0;
+        return;
     }
 
     file.close();
 
-	// проверка на пустоту массива
-    if(originalArray.empty())
+    // проверка на пустоту массива
+	if(arraySize == 0)
     {
-      ShowMessage("Файл пуст!");
-      return;
+        ShowMessage("Файл пуст!");
+        return;
     }
 
     // сохраняем имя файла
     currentFileName = ChangeFileExt(
-      ExtractFileName(OpenDialog1->FileName), ""
+        ExtractFileName(OpenDialog1->FileName), ""
     );
 
     // информация пользователю
     MemoResults->Lines->Add(
-      "Загружен файл: " + currentFileName + ".txt"
+        "Загружен файл: " + currentFileName + ".txt"
     );
 
     MemoResults->Lines->Add(
-      "Размер массива: " + IntToStr((int)originalArray.size())
-      + " элементов."
+		"Размер массива: " + IntToStr(arraySize) + " элементов."
     );
 
     // рисуем массив
-    Visualizer::drawArray(this, originalArray, -1, originalArray.size());
+    Visualizer::drawArray(this, originalArray, arraySize, -1, arraySize);
 
     ShowMessage("Массив загружен успешно!");
   }
@@ -284,29 +344,27 @@ void __fastcall TForm1::btnLoadClick(TObject *Sender)
 // save sorted
 void __fastcall TForm1::btnSaveSortedClick(TObject *Sender)
 {
-	if (sortedArray.empty())
-	{
-		ShowMessage("Нет отсортированного массива!");
-		return;
-	}
+	if (sortedArray == nullptr || arraySize == 0)
+    {
+        ShowMessage("Нет отсортированного массива!");
+        return;
+    }
 
-	String sortName = cbAlgorithms->Text;
-	saveToOutputFolder(sortName);
+    String sortName = cbAlgorithms->Text;
+    saveToOutputFolder(sortName);
 }
+
 // save results
 void __fastcall TForm1::btnSaveResultsClick(TObject *Sender)
 {
-	if (MemoResults->Lines->Count == 0)
-	{
+    if (MemoResults->Lines->Count == 0)
+    {
         ShowMessage("Нет результатов для сохранения!");
         return;
     }
 
     String sortName = cbAlgorithms->Text;
-	saveToOutputFolder(sortName);
-}
-__fastcall TForm1::~TForm1()
-{
+    saveToOutputFolder(sortName);
 }
 
 

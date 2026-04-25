@@ -1,28 +1,21 @@
 #ifndef Unit1H
 #define Unit1H
+
 #include <System.Classes.hpp>
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.Dialogs.hpp>
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.StdCtrls.hpp>
-
-#include <vector>
-using namespace std;
-
-#include <Vcl.Controls.hpp>
-#include <Vcl.StdCtrls.hpp>
-#include <Vcl.ComCtrls.hpp>
-#include <Vcl.ExtCtrls.hpp>
-#include <Vcl.Dialogs.hpp>
 #include <Vcl.Forms.hpp>
+
 
 // Главная форма приложения
 class TForm1 : public TForm
 {
 public:
-	__fastcall TForm1(TComponent* Owner);
-	__fastcall ~TForm1();
+    __fastcall TForm1(TComponent* Owner);
+    __fastcall ~TForm1();
 
 __published: // Компоненты формы
 
@@ -41,7 +34,7 @@ __published: // Компоненты формы
     TEdit *editSize;   // Размер массива
     TEdit *editMin;    // Минимальное значение
     TEdit *editMax;
-	TMemo *MemoResults;
+    TMemo *MemoResults;
 
     // Скорость анимации
     TTrackBar *trackSpeed;
@@ -51,28 +44,31 @@ __published: // Компоненты формы
 
     // Область визуализации
     TPaintBox *paintBox;
-	TSaveDialog *SaveDialog1;
-	TOpenDialog *OpenDialog1;
-	TLabel *Label1;
-	TLabel *Label2;
-	TLabel *Label3;
-	TLabel *Label4;
+    TSaveDialog *SaveDialog1;
+    TOpenDialog *OpenDialog1;
+    TLabel *Label1;
+    TLabel *Label2;
+    TLabel *Label3;
+    TLabel *Label4;
 
     // Обработчики событий кнопок
     void __fastcall btnGenerateClick(TObject *Sender);
     void __fastcall btnSortSelectedClick(TObject *Sender);
     void __fastcall btnSortAllClick(TObject *Sender);
     void __fastcall btnSaveSortedClick(TObject *Sender);
-	void __fastcall btnSaveResultsClick(TObject *Sender);
-	void __fastcall btnLoadClick(TObject *Sender);
+    void __fastcall btnSaveResultsClick(TObject *Sender);
+    void __fastcall btnLoadClick(TObject *Sender);
 
 private:
 
-	// Исходный массив
-    vector<int> originalArray;
+    // Исходный массив (динамический)
+    int* originalArray;
 
-    // Отсортированный массив
-    vector<int> sortedArray;
+    // Отсортированный массив (динамический)
+    int* sortedArray;
+
+    // Размер массивов
+    int arraySize;
 
     // Имя исходного файла (без расширения)
     String currentFileName;
@@ -81,7 +77,7 @@ private:
     bool validateInput();
 
     // Сохранение результатов в папку output
-	void saveToOutputFolder(String sortName);
+    void saveToOutputFolder(String sortName);
 };
 
 extern PACKAGE TForm1 *Form1;

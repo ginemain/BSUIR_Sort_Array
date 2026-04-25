@@ -4,9 +4,9 @@
 using namespace std;
 
 // Пузырьковая сортировка
-void Sorting::bubbleSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
+void Sorting::bubbleSort(int* arr, int size, SortStats& stats, TForm* form, bool animate, int delay)
 {
-    int n = arr.size();
+    int n = size;
 
     for(int i = 0; i < n - 1; i++)
     {
@@ -22,7 +22,7 @@ void Sorting::bubbleSort(vector<int>& arr, SortStats& stats, TForm* form, bool a
 
             if(animate)
             {
-                Visualizer::drawArray(form, arr, j, n - i);
+                Visualizer::drawArray(form, arr, size, j, n - i);
                 Sleep(delay);
                 Application->ProcessMessages();
             }
@@ -31,9 +31,9 @@ void Sorting::bubbleSort(vector<int>& arr, SortStats& stats, TForm* form, bool a
 }
 
 // Сортировка вставками
-void Sorting::insertionSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
+void Sorting::insertionSort(int* arr, int size, SortStats& stats, TForm* form, bool animate, int delay)
 {
-    int n = arr.size();
+    int n = size;
 
     for(int i = 1; i < n; i++)
     {
@@ -54,7 +54,7 @@ void Sorting::insertionSort(vector<int>& arr, SortStats& stats, TForm* form, boo
 
             if(animate)
             {
-                Visualizer::drawArray(form, arr, j, n);
+                Visualizer::drawArray(form, arr, size, j, n);
                 Sleep(delay);
                 Application->ProcessMessages();
             }
@@ -65,9 +65,9 @@ void Sorting::insertionSort(vector<int>& arr, SortStats& stats, TForm* form, boo
 }
 
 // Сортировка выбором
-void Sorting::selectionSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
+void Sorting::selectionSort(int* arr, int size, SortStats& stats, TForm* form, bool animate, int delay)
 {
-    int n = arr.size();
+    int n = size;
 
     for(int i = 0; i < n - 1; i++)
     {
@@ -89,7 +89,7 @@ void Sorting::selectionSort(vector<int>& arr, SortStats& stats, TForm* form, boo
 
         if(animate)
         {
-            Visualizer::drawArray(form, arr, i, n);
+            Visualizer::drawArray(form, arr, size, i, n);
             Sleep(delay);
             Application->ProcessMessages();
         }
@@ -97,9 +97,9 @@ void Sorting::selectionSort(vector<int>& arr, SortStats& stats, TForm* form, boo
 }
 
 // Shell Sort
-void Sorting::shellSort(vector<int>& arr, SortStats& stats, TForm* form, bool animate, int delay)
+void Sorting::shellSort(int* arr, int size, SortStats& stats, TForm* form, bool animate, int delay)
 {
-    int n = arr.size();
+    int n = size;
 
     for(int gap = n / 2; gap > 0; gap /= 2)
     {
@@ -121,7 +121,7 @@ void Sorting::shellSort(vector<int>& arr, SortStats& stats, TForm* form, bool an
 
                 if(animate)
                 {
-                    Visualizer::drawArray(form, arr, j, n);
+                    Visualizer::drawArray(form, arr, size, j, n);
                     Sleep(delay);
                     Application->ProcessMessages();
                 }
@@ -133,7 +133,7 @@ void Sorting::shellSort(vector<int>& arr, SortStats& stats, TForm* form, bool an
 }
 
 // partition для quick sort
-int Sorting::partition(vector<int>& arr, SortStats& stats, int low, int high)
+int Sorting::partition(int* arr, SortStats& stats, int low, int high)
 {
     int pivot = arr[high];
     int i = low - 1;
@@ -157,13 +157,13 @@ int Sorting::partition(vector<int>& arr, SortStats& stats, int low, int high)
 }
 
 // Quick Sort
-void Sorting::quickSort(vector<int>& arr, SortStats& stats, int low, int high)
+void Sorting::quickSort(int* arr, int size, SortStats& stats, int low, int high)
 {
     if(low < high)
     {
         int pi = partition(arr, stats, low, high);
 
-        quickSort(arr, stats, low, pi - 1);
-        quickSort(arr, stats, pi + 1, high);
+        quickSort(arr, size, stats, low, pi - 1);
+        quickSort(arr, size, stats, pi + 1, high);
     }
 }
